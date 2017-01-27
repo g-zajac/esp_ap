@@ -9,31 +9,56 @@
  */
 // -----------------------------------------------------------------------------
 // Soft access point
+#define FIRMWARE_VERSION "1.2.5"  //MAJOR.MINOR.PATCH more info on: http://semver.org
+#define WITH_OLED true //comment this line to have ap without optional oled
+
+// PRODUCTION, remove comments below to stop serial debuging
+//#define PRODUCTION_SERIAL true
+#define SERIAL_SPEED 115200
 // -----------------------------------------------------------------------------
 //libraries
 #include <ESP8266WiFi.h>
 
+// --------------------------- OLED --------------------------------------------
+#ifdef WITH_OLED
+  #include <Wire.h>
+  #include "SSD1306.h"
+  #include <brzo_i2c.h>  //add to /lib from:
+
+  // oled config
+  #define ADDRESS 0x3C//0x39
+  #define SDA_PIN     2   //
+  #define SCL_PIN     14   //
+  SSD1306 display(ADDRESS, SDA_PIN, SCL_PIN);
+#endif
+
+// ------------------------------ Network --------------------------------------
 //create credentials.h file in src folder with ssid and pass formated like:
 // const char* esp_ssid = "your ssid";
 // const char* esp_password = "your password";
 #include "credentials.h"  //ignored by git
 
-// -----------------------------------------------------------------------------
-#define FIRMWARE_VERSION "1.0.1"  //MAJOR.MINOR.PATCH more info on: http://semver.org
-
 /* Set these to your desired network parameters, credentials in separate file  */
 IPAddress esp_IP(192,168,1,1);
 IPAddress gateway(192,168,1,1);
 IPAddress mask(255,255,255,0);
-
-// PRODUCTION, remove comments below to stop serial debuging
-//#define PRODUCTION_SERIAL true
-#define SERIAL_SPEED 115200
 //------------------------------------------------------------------------------
 
 extern "C" {
 #include "user_interface.h"  //NOTE needed for esp info
 }
+
+#ifdef WITH_OLED
+  void oled_info(){     //TODO add ap status, ch inf, running time, adjust fonts
+    display.clear();
+    display.setFont(ArialMT_Plain_10);
+    display.drawString(0, 14, "Ready");
+    display.drawString(0, 26, WiFi.softAPIP().toString());
+    display.drawString(0, 38, "Clients: " + String(WiFi.softAPgetStationNum()));
+    display.drawString(0, 50, "Firmware ver: " + String(FIRMWARE_VERSION));
+    display.display();
+  }
+#endif
 
 void setup()
 {
@@ -57,10 +82,24 @@ void setup()
           Serial.println();
   #endif
 
+  // seting up oled
+  #ifdef WITH_OLED
+    display.init();
+    display.flipScreenVertically();
+    display.setContrast(255);
+
+    display.clear();
+    display.setFont(ArialMT_Plain_10);  //create more fonts at http://oleddisplay.squix.ch/
+    display.drawString(0, 14, "Neverland AP");
+    display.drawString(0, 28, "Setting up...");
+    display.display();
+    delay(1000);  //TODO remove the delay
+  #endif
+
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
     Serial.print("\r\Setting up access point for wifi network ... ");
   #endif
-  
+
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(esp_IP, gateway, mask);
 
@@ -72,18 +111,19 @@ void setup()
   hidden - optional parameter, if set to true will hide SSID
   ***/
 
-  boolean result = WiFi.softAP(esp_ssid, esp_password);
+  boolean result = WiFi.softAP(esp_ssid, esp_password); //TODO make result global, add info to oled
   if(result == true)
   {
     #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
-      Serial.println("Ready");
+      Serial.println("AP Ready");
     #endif
   }
   else
   {
     #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
-      Serial.println("Failed!");  //TODO led status?
+      Serial.println("AP Failed!");  //TODO led status?
     #endif
+
   }
 
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
@@ -91,13 +131,17 @@ void setup()
     Serial.print("ESP AccessPoint IP address: ");
     Serial.println(accessIP);
   #endif
-
 }
 
 void loop()
 {
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
-  Serial.printf("Stations connected = %d\n", WiFi.softAPgetStationNum());
-  delay(3000);
+    Serial.printf("Stations connected = %d\n", WiFi.softAPgetStationNum());
   #endif
+
+  #ifdef WITH_OLED
+    oled_info();
+  #endif
+
+  delay(1000);
 }
