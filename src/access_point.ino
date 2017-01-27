@@ -13,13 +13,15 @@
 //libraries
 #include <ESP8266WiFi.h>
 
+//create credentials.h file in src folder with ssid and pass formated like:
+// const char* esp_ssid = "your ssid";
+// const char* esp_password = "your password";
+#include "credentials.h"  //ignored by git
 
 // -----------------------------------------------------------------------------
 #define FIRMWARE_VERSION "1.0.1"  //MAJOR.MINOR.PATCH more info on: http://semver.org
 
-/* Set these to your desired credentials and network parameters */
-const char* esp_ssid = "TDC";
-const char* esp_password = "12345678";
+/* Set these to your desired network parameters, credentials in separate file  */
 
 IPAddress esp_IP(192,168,1,1);
 IPAddress gateway(192,168,1,1);
