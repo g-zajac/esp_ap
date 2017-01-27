@@ -22,16 +22,14 @@
 #define FIRMWARE_VERSION "1.0.1"  //MAJOR.MINOR.PATCH more info on: http://semver.org
 
 /* Set these to your desired network parameters, credentials in separate file  */
-
 IPAddress esp_IP(192,168,1,1);
 IPAddress gateway(192,168,1,1);
 IPAddress mask(255,255,255,0);
 
-// PRODUCTION, remove comments below to stop serial and telnet debuging
+// PRODUCTION, remove comments below to stop serial debuging
 //#define PRODUCTION_SERIAL true
 #define SERIAL_SPEED 115200
 //------------------------------------------------------------------------------
-
 
 extern "C" {
 #include "user_interface.h"  //NOTE needed for esp info
@@ -59,13 +57,12 @@ void setup()
           Serial.println();
   #endif
 
-
-  WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(esp_IP, gateway, mask);
-
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
     Serial.print("\r\Setting up access point for wifi network ... ");
   #endif
+  
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(esp_IP, gateway, mask);
 
   /***
   WiFi.softAP(ssid, password, channel, hidden)
@@ -85,7 +82,7 @@ void setup()
   else
   {
     #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
-      Serial.println("Failed!");
+      Serial.println("Failed!");  //TODO led status?
     #endif
   }
 
