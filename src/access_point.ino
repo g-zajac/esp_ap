@@ -9,7 +9,7 @@
  */
 // -----------------------------------------------------------------------------
 // Soft access point
-#define FIRMWARE_VERSION "1.2.5"  //MAJOR.MINOR.PATCH more info on: http://semver.org
+#define FIRMWARE_VERSION "1.2.6"  //MAJOR.MINOR.PATCH more info on: http://semver.org
 #define WITH_OLED true //comment this line to have ap without optional oled
 
 // PRODUCTION, remove comments below to stop serial debuging
@@ -23,7 +23,7 @@
 #ifdef WITH_OLED
   #include <Wire.h>
   #include "SSD1306.h"
-  #include <brzo_i2c.h>  //add to /lib from:
+  #include <brzo_i2c.h>  //add to /lib from: https://github.com/pasko-zh/brzo_i2c.git or use platformio install brzo_i2c
 
   // oled config
   #define ADDRESS 0x3C//0x39
