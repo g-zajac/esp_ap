@@ -53,8 +53,8 @@ extern "C" {
   void oled_info(){     //TODO add ap status, ch inf, running time, adjust fonts
     display.clear();
     display.setFont(ArialMT_Plain_10);
-    if(result == true){display.drawString(0, 14, "AP Ready");}
-    else {display.drawString(0, 14, "AP Failed");}
+    if(result == true){ display.drawString(0, 14, "AP Ready"); }
+    else { display.drawString(0, 14, "AP Failed"); }
     display.drawString(0, 26, WiFi.softAPIP().toString());
     display.drawString(0, 38, "Clients: " + String(WiFi.softAPgetStationNum()));
     display.drawString(0, 50, "Firmware ver: " + String(FIRMWARE_VERSION));
@@ -113,7 +113,7 @@ void setup()
   hidden - optional parameter, if set to true will hide SSID
   ***/
 
-  boolean result = WiFi.softAP(esp_ssid, esp_password); //TODO make result global, add info to oled
+  result = WiFi.softAP(esp_ssid, esp_password);
   if(result == true)
   {
     #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
