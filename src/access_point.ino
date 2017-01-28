@@ -9,7 +9,7 @@
  */
 // -----------------------------------------------------------------------------
 // Soft access point
-#define FIRMWARE_VERSION "1.3.0"  //MAJOR.MINOR.PATCH more info on: http://semver.org
+#define FIRMWARE_VERSION "1.3.1"  //MAJOR.MINOR.PATCH more info on: http://semver.org
 #define WITH_OLED true //comment this line to have ap without optional oled
 
 // PRODUCTION, remove comments below to stop serial debuging
@@ -64,13 +64,12 @@ char * TimeString()
 #ifdef WITH_OLED
   void oled_info(){     //TODO add ap status, ch inf, running time, adjust fonts
     display.clear();
-    display.setFont(ArialMT_Plain_10);
-    display.drawString(0,1, TimeString());
+    display.drawString(0,0, TimeString());
     if(result == true){ display.drawString(0, 14, "AP Ready"); }
     else { display.drawString(0, 14, "AP Failed"); }
     display.drawString(0, 26, WiFi.softAPIP().toString());
     display.drawString(0, 38, "Clients: " + String(WiFi.softAPgetStationNum()));
-    display.setFont(ArialMT_Plain_8);
+    // display.setFont(DejaVu_Sans_ExtraLight_10);
     display.drawString(0, 50, "Ver: " + String(FIRMWARE_VERSION));
     display.display();
   }
@@ -106,10 +105,11 @@ void setup()
 
     display.clear();
     display.setFont(ArialMT_Plain_10);  //create more fonts at http://oleddisplay.squix.ch/
-    display.drawString(0, 14, "Neverland AP");
-    display.drawString(0, 28, "Setting up...");
-    display.display();
-    delay(1000);  //TODO remove the delay
+    //display.setFont(DejaVu_Sans_ExtraLight_9);
+    // display.drawString(0, 14, "Neverland AP");
+    // display.drawString(0, 28, "Setting up...");
+    // display.display();
+    // delay(1000);  //TODO remove the delay
   #endif
 
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
