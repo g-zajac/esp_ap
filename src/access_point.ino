@@ -9,7 +9,7 @@
  */
 // -----------------------------------------------------------------------------
 // Soft access point
-#define FIRMWARE_VERSION "1.2.6"  //MAJOR.MINOR.PATCH more info on: http://semver.org
+#define FIRMWARE_VERSION "1.3.1"  //MAJOR.MINOR.PATCH more info on: http://semver.org
 #define WITH_OLED true //comment this line to have ap without optional oled
 
 // PRODUCTION, remove comments below to stop serial debuging
@@ -43,19 +43,34 @@ IPAddress esp_IP(192,168,1,1);
 IPAddress gateway(192,168,1,1);
 IPAddress mask(255,255,255,0);
 //------------------------------------------------------------------------------
+boolean result = 0;
 
 extern "C" {
 #include "user_interface.h"  //NOTE needed for esp info
 }
 
+char * TimeString()
+{
+  unsigned long t = millis()/1000;
+  static char str[10];
+  long h = t / 3600;
+  t = t % 3600;
+  int m = t / 60;
+  int s = t % 60;
+  sprintf(str, "%02ld:%02d:%02d", h, m, s);
+  return str;
+}
+
 #ifdef WITH_OLED
   void oled_info(){     //TODO add ap status, ch inf, running time, adjust fonts
     display.clear();
-    display.setFont(ArialMT_Plain_10);
-    display.drawString(0, 14, "Ready");
+    display.drawString(0,0, TimeString());
+    if(result == true){ display.drawString(0, 14, "AP Ready"); }
+    else { display.drawString(0, 14, "AP Failed"); }
     display.drawString(0, 26, WiFi.softAPIP().toString());
     display.drawString(0, 38, "Clients: " + String(WiFi.softAPgetStationNum()));
-    display.drawString(0, 50, "Firmware ver: " + String(FIRMWARE_VERSION));
+    // display.setFont(DejaVu_Sans_ExtraLight_10);
+    display.drawString(0, 50, "Ver: " + String(FIRMWARE_VERSION));
     display.display();
   }
 #endif
@@ -90,10 +105,11 @@ void setup()
 
     display.clear();
     display.setFont(ArialMT_Plain_10);  //create more fonts at http://oleddisplay.squix.ch/
-    display.drawString(0, 14, "Neverland AP");
-    display.drawString(0, 28, "Setting up...");
-    display.display();
-    delay(1000);  //TODO remove the delay
+    //display.setFont(DejaVu_Sans_ExtraLight_9);
+    // display.drawString(0, 14, "Neverland AP");
+    // display.drawString(0, 28, "Setting up...");
+    // display.display();
+    // delay(1000);  //TODO remove the delay
   #endif
 
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
@@ -111,7 +127,7 @@ void setup()
   hidden - optional parameter, if set to true will hide SSID
   ***/
 
-  boolean result = WiFi.softAP(esp_ssid, esp_password); //TODO make result global, add info to oled
+  result = WiFi.softAP(esp_ssid, esp_password);
   if(result == true)
   {
     #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
