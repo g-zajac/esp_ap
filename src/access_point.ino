@@ -9,7 +9,7 @@
  */
 // -----------------------------------------------------------------------------
 // Soft access point
-#define FIRMWARE_VERSION "1.2.6"  //MAJOR.MINOR.PATCH more info on: http://semver.org
+#define FIRMWARE_VERSION "1.2.8"  //MAJOR.MINOR.PATCH more info on: http://semver.org
 #define WITH_OLED true //comment this line to have ap without optional oled
 
 // PRODUCTION, remove comments below to stop serial debuging
@@ -43,6 +43,7 @@ IPAddress esp_IP(192,168,1,1);
 IPAddress gateway(192,168,1,1);
 IPAddress mask(255,255,255,0);
 //------------------------------------------------------------------------------
+boolean result = 0;
 
 extern "C" {
 #include "user_interface.h"  //NOTE needed for esp info
@@ -52,7 +53,8 @@ extern "C" {
   void oled_info(){     //TODO add ap status, ch inf, running time, adjust fonts
     display.clear();
     display.setFont(ArialMT_Plain_10);
-    display.drawString(0, 14, "Ready");
+    if(result == true){display.drawString(0, 14, "AP Ready");}
+    else {display.drawString(0, 14, "AP Failed");}
     display.drawString(0, 26, WiFi.softAPIP().toString());
     display.drawString(0, 38, "Clients: " + String(WiFi.softAPgetStationNum()));
     display.drawString(0, 50, "Firmware ver: " + String(FIRMWARE_VERSION));
