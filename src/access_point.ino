@@ -9,7 +9,7 @@
  */
 // -----------------------------------------------------------------------------
 // Soft access point
-#define FIRMWARE_VERSION "1.3.1"  //MAJOR.MINOR.PATCH more info on: http://semver.org
+#define FIRMWARE_VERSION "1.3.2"  //MAJOR.MINOR.PATCH more info on: http://semver.org
 #define WITH_OLED true //comment this line to have ap without optional oled
 
 // PRODUCTION, remove comments below to stop serial debuging
@@ -62,7 +62,7 @@ char * TimeString()
 }
 
 #ifdef WITH_OLED
-  void oled_info(){     //TODO add ap status, ch inf, running time, adjust fonts
+  void oled_info(){     //TODO  ch inf
     display.clear();
     display.drawString(0,0, TimeString());
     if(result == true){ display.drawString(0, 14, "AP Ready"); }
@@ -105,11 +105,6 @@ void setup()
 
     display.clear();
     display.setFont(ArialMT_Plain_10);  //create more fonts at http://oleddisplay.squix.ch/
-    //display.setFont(DejaVu_Sans_ExtraLight_9);
-    // display.drawString(0, 14, "Neverland AP");
-    // display.drawString(0, 28, "Setting up...");
-    // display.display();
-    // delay(1000);  //TODO remove the delay
   #endif
 
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
@@ -128,19 +123,10 @@ void setup()
   ***/
 
   result = WiFi.softAP(esp_ssid, esp_password);
-  if(result == true)
-  {
-    #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
-      Serial.println("AP Ready");
-    #endif
-  }
-  else
-  {
-    #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
-      Serial.println("AP Failed!");  //TODO led status?
-    #endif
-
-  }
+  #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
+    if(result == true){Serial.println("AP Ready");}
+    else {Serial.println("AP Failed!");}
+  #endif
 
   #ifndef PRODUCTION_SERIAL // Not in PRODUCTION
     IPAddress accessIP = WiFi.softAPIP();
@@ -159,5 +145,5 @@ void loop()
     oled_info();
   #endif
 
-  delay(1000);
+  delay(1000);  //TODO replace with mills()
 }
